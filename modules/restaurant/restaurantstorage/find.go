@@ -7,15 +7,19 @@ import (
 	"simple-rest-api/modules/restaurant/restaurantmodel"
 )
 
-func (s *sqlStore) GetById(
+func (s *sqlStore) FindDataByCondition(
 	ctx context.Context,
-	data *restaurantmodel.RestaurantId) (
-	*restaurantmodel.Restaurant,
-	error) {
-	db := *s.db
+	conditions map[string]any,
+	moreKeys ...string,
+) (*restaurantmodel.Restaurant, error) {
 	var result restaurantmodel.Restaurant
 
-	if err := db.Where(&data).First(&result).Error; err != nil {
+	db := s.db
+
+	for _, key := range moreKeys {
+		db = db.Preload(key)
+	}
+	if err := db.Where(conditions).First(&result).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, common.ErrEntityNotFound(restaurantmodel.EntityName, common.RecordNotFound)
 		}

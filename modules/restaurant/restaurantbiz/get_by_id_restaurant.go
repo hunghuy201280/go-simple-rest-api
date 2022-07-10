@@ -2,6 +2,7 @@ package restaurantbiz
 
 import (
 	"context"
+	"simple-rest-api/common"
 	"simple-rest-api/modules/restaurant/restaurantmodel"
 )
 
@@ -32,6 +33,16 @@ func (biz getByIdRestaurantBiz) GetByIdRestaurant(
 	}
 
 	result, err := biz.store.GetById(ctx, data)
+
+	if err != nil {
+		if err != common.RecordNotFound {
+			return nil, common.ErrCannotGetEntity(restaurantmodel.EntityName, err)
+		}
+		return nil, common.ErrCannotGetEntity(restaurantmodel.EntityName, err)
+	}
+	if result.Status == 0 {
+		return nil, common.ErrEntityDeleted(restaurantmodel.EntityName, nil)
+	}
 
 	return result, err
 

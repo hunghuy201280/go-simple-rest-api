@@ -28,17 +28,20 @@ func (s *sqlStore) ListDataByCondition(
 		}
 	}
 
-	db = db.Where("status = 1")
 	//if err := db.Count(&paging.Total).Error; err != nil {
 	//	return nil, err
 	//}
+	if paging == nil {
+		paging = &common.Paging{}
+	}
+	paging.Fulfill()
 
 	if err := db.
 		Offset((paging.Page - 1) * paging.Limit).
 		Limit(paging.Limit).
 		Order("id desc").
 		Find(&result).Error; err != nil {
-		return nil, err
+		return nil, common.ErrDB(err)
 	}
 	paging.Total = int64(len(result))
 	return result, nil

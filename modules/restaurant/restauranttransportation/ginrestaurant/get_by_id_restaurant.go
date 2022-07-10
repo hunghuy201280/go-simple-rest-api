@@ -13,23 +13,17 @@ import (
 func GetByIdRestaurant(ctx component.AppContext) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var data restaurantmodel.RestaurantId
-
 		if err := context.ShouldBindUri(&data); err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
+			panic(common.ErrInvalidRequest(err))
 
 		}
 
 		store := restaurantstorage.NewSQLStore(ctx.GetMainDbConnection())
 		biz := restaurantbiz.NewGetByIdRestaurantBiz(store)
-		result, err := biz.GetByIdRestaurant(context, &data)
+		result, err := biz.GetByIdRestaurant(context.Request.Context(), &data)
 		if err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
+
+			panic(err)
 		}
 
 		context.JSON(http.StatusOK, common.SimpleSuccessResponse(result))

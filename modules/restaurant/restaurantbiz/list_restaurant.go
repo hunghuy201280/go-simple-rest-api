@@ -30,6 +30,6 @@ func (biz *listRestaurantBiz) ListRestaurant(
 	paging *common.Paging,
 ) ([]restaurantmodel.Restaurant, error) {
 
-	result, err := biz.store.ListDataByCondition(ctx, nil, filter, paging)
+	result, err := biz.store.ListDataByCondition(ctx, common.JS{"status": 1}, filter, paging)
 	return result, err
 }

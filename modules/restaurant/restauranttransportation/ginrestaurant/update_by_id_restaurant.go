@@ -15,30 +15,24 @@ func UpdateByIdRestaurant(ctx component.AppContext) gin.HandlerFunc {
 		var data restaurantmodel.RestaurantUpdate
 		var id restaurantmodel.RestaurantId
 		if err := context.ShouldBindUri(&id); err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
+			panic(err)
+
 		}
 
 		err := context.ShouldBind(&data)
 		if err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
+			panic(err)
+
 		}
 
 		store := restaurantstorage.NewSQLStore(ctx.GetMainDbConnection())
-		biz := restaurantbiz.NewUpdateByIdBiz(store)
-		if err := biz.UpdateByIdRestaurant(context, &id, &data); err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
+		biz := restaurantbiz.NewUpdateRestaurantByIdBiz(store)
+		if err := biz.UpdateByIdRestaurant(context.Request.Context(), &id, &data); err != nil {
+			panic(err)
+
 		}
 
-		context.JSON(http.StatusOK, common.SimpleSuccessResponse("ok"))
+		context.JSON(http.StatusOK, common.SimpleSuccessResponse(true))
 		return
 	}
 }

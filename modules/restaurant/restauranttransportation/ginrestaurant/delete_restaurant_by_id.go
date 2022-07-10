@@ -10,24 +10,20 @@ import (
 	"simple-rest-api/modules/restaurant/restaurantstorage"
 )
 
-func DeleteRestarantById(ctx component.AppContext) gin.HandlerFunc {
+func DeleteRestaurantById(ctx component.AppContext) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var id restaurantmodel.RestaurantId
 		err := context.ShouldBindUri(&id)
 		if err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
+			panic(err)
+
 		}
 
 		store := restaurantstorage.NewSQLStore(ctx.GetMainDbConnection())
 		biz := restaurantbiz.NewDeleteRestaurantBiz(store)
-		if err := biz.DeleteRestaurantById(context, &id); err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
+		if err := biz.DeleteRestaurantById(context.Request.Context(), &id); err != nil {
+			panic(err)
+
 		}
 
 		context.JSON(http.StatusOK, common.SimpleSuccessResponse("ok"))

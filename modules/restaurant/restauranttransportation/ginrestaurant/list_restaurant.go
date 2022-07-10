@@ -16,31 +16,21 @@ func ListRestaurant(ctx component.AppContext) gin.HandlerFunc {
 		var paging common.Paging
 
 		if err := c.ShouldBind(&filter); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
+			panic(err)
 
 		}
 
 		if err := c.ShouldBind(&paging); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
+			panic(err)
 
 		}
-
-		paging.Fulfill()
 
 		store := restaurantstorage.NewSQLStore(ctx.GetMainDbConnection())
 		biz := restaurantbiz.NewListRestaurantBiz(store)
 		result, err := biz.ListRestaurant(c.Request.Context(), &filter, &paging)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
+			panic(err)
+
 		}
 
 		c.JSON(http.StatusOK, common.NewSuccessResponse(result, paging, filter))

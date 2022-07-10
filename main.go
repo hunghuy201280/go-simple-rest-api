@@ -5,9 +5,9 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
-	"net/http"
 	"os"
 	"simple-rest-api/component"
+	"simple-rest-api/middleware"
 	"simple-rest-api/modules/restaurant/restauranttransportation/ginrestaurant"
 )
 
@@ -24,21 +24,17 @@ func main() {
 
 }
 func runService(db *gorm.DB) error {
-	r := gin.Default()
 	appCtx := component.NewAppContext(db)
-	restaurants := r.Group("/restaurant")
-	{
-		restaurants.POST("", ginrestaurant.CreateRestaurant(appCtx))
-		restaurants.GET("", ginrestaurant.ListRestaurant(appCtx))
-		restaurants.GET("/:id", ginrestaurant.GetByIdRestaurant(appCtx))
-		restaurants.PATCH("/:id", ginrestaurant.UpdateByIdRestaurant(appCtx))
-		restaurants.DELETE("/:id", ginrestaurant.DeleteRestarantById(appCtx))
-	}
+	r := gin.Default()
+	r.Use(middleware.Recover(appCtx))
 
-	r.GET("/ping", func(context *gin.Context) {
-		context.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	restaurants := r.Group("/restaurant")
+
+	restaurants.POST("", ginrestaurant.CreateRestaurant(appCtx))
+	restaurants.GET("", ginrestaurant.ListRestaurant(appCtx))
+	restaurants.GET("/:id", ginrestaurant.GetByIdRestaurant(appCtx))
+	restaurants.PATCH("/:id", ginrestaurant.UpdateByIdRestaurant(appCtx))
+	restaurants.DELETE("/:id", ginrestaurant.DeleteRestaurantById(appCtx))
+
 	return r.Run()
 }
