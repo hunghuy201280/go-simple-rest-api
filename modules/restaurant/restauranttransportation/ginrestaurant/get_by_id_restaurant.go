@@ -12,6 +12,13 @@ import (
 
 func GetByIdRestaurant(ctx component.AppContext) gin.HandlerFunc {
 	return func(context *gin.Context) {
+
+		go func() {
+			defer common.AppRecover()
+
+			panic("panicccccc")
+		}()
+
 		var data restaurantmodel.RestaurantId
 		if err := context.ShouldBindUri(&data); err != nil {
 			panic(common.ErrInvalidRequest(err))
