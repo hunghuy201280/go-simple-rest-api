@@ -27,6 +27,8 @@ func (s *sqlStore) ListDataByCondition(
 			db = db.Where("city_id= ?", v.CityId)
 		}
 	}
+
+	db = db.Where("status = 1")
 	//if err := db.Count(&paging.Total).Error; err != nil {
 	//	return nil, err
 	//}

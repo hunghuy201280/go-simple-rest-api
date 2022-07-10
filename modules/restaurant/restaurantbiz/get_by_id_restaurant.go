@@ -2,8 +2,6 @@ package restaurantbiz
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"simple-rest-api/modules/restaurant/restaurantmodel"
 )
 
@@ -29,8 +27,8 @@ func (biz getByIdRestaurantBiz) GetByIdRestaurant(
 	*restaurantmodel.Restaurant,
 	error) {
 
-	if data == nil || data.Id <= 0 {
-		return nil, errors.New(fmt.Sprintf("invalid Id %d", data.Id))
+	if err := data.Validate(); err != nil {
+		return nil, err
 	}
 
 	result, err := biz.store.GetById(ctx, data)

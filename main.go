@@ -32,6 +32,7 @@ func runService(db *gorm.DB) error {
 		restaurants.GET("", ginrestaurant.ListRestaurant(appCtx))
 		restaurants.GET("/:id", ginrestaurant.GetByIdRestaurant(appCtx))
 		restaurants.PATCH("/:id", ginrestaurant.UpdateByIdRestaurant(appCtx))
+		restaurants.DELETE("/:id", ginrestaurant.DeleteRestarantById(appCtx))
 	}
 
 	r.GET("/ping", func(context *gin.Context) {

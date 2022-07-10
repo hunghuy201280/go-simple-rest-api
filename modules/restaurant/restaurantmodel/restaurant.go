@@ -2,6 +2,7 @@ package restaurantmodel
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -16,8 +17,9 @@ func (r Restaurant) TableName() string {
 }
 
 type RestaurantUpdate struct {
-	Name *string `json:"name" gorm:"column:name;"`
-	Addr *string `json:"address" gorm:"column:addr;"`
+	Name   *string `json:"name" gorm:"column:name;"`
+	Addr   *string `json:"address" gorm:"column:addr;"`
+	Status *int    `json:"status" gorm:"column:status;"`
 }
 
 func (r RestaurantUpdate) TableName() string {
@@ -47,6 +49,13 @@ type RestaurantId struct {
 	Id int `json:"id" gorm:"column:id;" uri:"id"`
 }
 
-func (r RestaurantId) TableName() string {
+func (id RestaurantId) TableName() string {
 	return Restaurant{}.TableName()
+}
+
+func (id *RestaurantId) Validate() error {
+	if id == nil || id.Id <= 0 {
+		return errors.New(fmt.Sprintf("invalid Id %d", id.Id))
+	}
+	return nil
 }

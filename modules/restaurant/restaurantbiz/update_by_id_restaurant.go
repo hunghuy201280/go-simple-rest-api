@@ -2,8 +2,6 @@ package restaurantbiz
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"simple-rest-api/modules/restaurant/restaurantmodel"
 )
 
@@ -20,8 +18,8 @@ func NewUpdateByIdBiz(store UpdateByIdRestaurantStore) *updateByIdBiz {
 }
 
 func (biz updateByIdBiz) UpdateByIdRestaurant(ctx context.Context, id *restaurantmodel.RestaurantId, data *restaurantmodel.RestaurantUpdate) error {
-	if id == nil || id.Id <= 0 {
-		return errors.New(fmt.Sprintf("invalid id %d", id))
+	if err := id.Validate(); err != nil {
+		return err
 	}
 	if err := biz.store.UpdateById(ctx, id, data); err != nil {
 		return err
